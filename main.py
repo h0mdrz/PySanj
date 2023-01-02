@@ -1,19 +1,52 @@
+import os
 import numpy as np
 import cv2 as cv
-import os
-import json
+import re
 
-print("PySanj : A Python Based Test Correction Tool")
-print("Made In Codishellish")
-print("Type Your Commands Here : ")
-print("> 1 : New Test : To Make New Tests")
-print("> 2 : Tests : A List Of Your Tests")
-print("> 3 : Correction : Check Testpages")
+iouh = 0
+def ct(p, u):
+    e = 0
+    global iouh
+    iouh = 0
+    for i in range(len(p)):
+        f = 0
+        for j in range(4):
+            if p[i][j] == 1:
+                if f != 0 and f != "error":
+                    if u != 0:
+                        f = "f"
+                    else:
+                        f = "error"
+                    e += 1
+                else:
+                    f = str(j + 1)
+            elif j == 3 and f == 0:
+                if u != 0:
+                    f = "0"
+                else:
+                    f = "error"
+                e += 1
+        if u != 0:
+            rtge = 0
+            if f == "0":
+                rtge = "-"
+            else:
+                if u[i] == f:
+                    iouh+=1
+                    rtge = "✓"
+                else:
+                    iouh-=.25
+                    rtge = "✕"
+            print("+ " + str(i + 1) + " ( " + f + " ?= " + u[i] + " ) => ( " + rtge + " )")
+        else:
+            print("+ " + str(i + 1) + " ( " + f + " )")
+
 
 def a(v):
     img = cv.imread(v)
     img = cv.resize(img, (800, 400))
     img = img[0:00 + 352, 215:215 + 560]
+
     def s(t, e):
         if t == 0:
             t = 25 * t + (t - 1) * 18 - 15
@@ -36,104 +69,119 @@ def a(v):
             o[i, j] = s((i + 1), (j + 1))
     return o
 
-def c():
-    x = input("> ")
-    while x == "":
-        print("- Please Enter A True Command !!")
-        x = input("> ")
-    if x == "1":
-        print("- Welcome To New Test Wizard :")
-        print("- Please Type Your New Test Name :")
+
+def lc(cs):
+    for i in range(len(cs)):
+        print("+ " + str(i + 1) + " " + cs[i])
+
+
+def cc():
+    global c
+    global cs
+    if int(c) >= len(cs) or int(c) < 0 or not re.compile("[0-9]+").fullmatch(str(c)):
+        print("- Invalid command!")
+        print("- Retry with another value:")
+        c = int(input("> ")) - 1
+        cc()
+
+
+def nt():
+    print("- Please type a name for your new test:")
+    t = input("> ")
+    if not os.path.exists('psnj/'):
+        os.mkdir('psnj')
+    while t == "" or not re.compile("[0-9a-zA-Z]+").fullmatch(t) or os.path.exists('psnj/'+t):
+        if os.path.exists('psnj/'+t):
+            print("- Test with this name already exits:")
+        else:
+            print("- Invalid test name!")
+        print("- Retry with another value:")
+        t = input("> ")
+    os.mkdir('psnj/'+t)
+    print("- Please choose how to import test keys")
+    global c
+    global cs
+    cs = ["Upload by file", "Upload manually"]
+    lc(cs)
+    c = int(input("> ")) - 1
+    cc()
+    if c == 0:
+        print("- Okay! Please type path of test key file without extension name (only jpg allowed):")
         y = input("> ")
-        while y == "":
-            print("- Please Enter Your Test Name !!")
+        while y == "" or not re.compile("[0-9a-zA-Z]+").fullmatch(y) or not os.path.exists(y + ".jpg"):
+            print("- Invalid File")
+            print("- Retry with another value:")
             y = input("> ")
-        print("- Now Please Type Your Test Questions File Path !")
-        u = input("> ")
-        while u == "" or os.path.exists(u) == False or u.endswith('.jpg') == False:
-            if u == "":
-                print("- File Path Must Be Filled !")
-            elif os.path.exists(u) == False:
-                print("- File Doesn't Exists !")
-            elif u.endswith('.jpg') == False:
-                print("- File Format Is Not True !!")
-            else :
-                print("- Unknown Error Occurred !!")
-            print("- Try Another Path :")
-            u = input("> ")
-        print("- Now You Can Upload Answers By Two Options :")
-        def j():
-            print("> 1 : Upload By Json File")
-            print("> 2 : Upload By Defualt Filling Exam File")
-            w = input("> ")
-            while w == "" or int(w) < 1 or int(w) > 2:
-                if w == "":
-                    print("- Input Must Be Filled !")
-                elif w < 1 or w > 2:
-                    print("- Function Is Not True !")
-                else:
-                    print("- Unknown Error Occurred !!")
-                print("- Please Try With Another Option !")
-                w = input("> ")
-            if w == 1:
-                k = "JSON"
-                g = "json"
-            else:
-                k = "Test"
-                g = "jpg"
-            print("- Please Type A Path For " + k + " File")
-            n = input("> ")
-            while n == "" or os.path.exists(n) == False or u.endswith('.' + g) == False:
-                if n == "":
-                    print("- File Path Must Be Filled !")
-                elif os.path.exists(n) == False:
-                    print("- File Doesn't Exists !")
-                elif n.endswith('.' + g) == False:
-                    print("- File Format Is Not True !!")
-                else:
-                    print("- Unknown Error Occurred !!")
-                print("- Try Another Path :")
-                n = input("> ")
-            print("- Answer File Preview :")
-            tr = 0
-            bu = ""
-            for i in range (len(a(n))):
-                z = 0
-                b = 0
-                for jsd in range(4):
-                    if a(n)[i][jsd] == 1 and tr == 0:
-                        z = jsd + 1
-                        b += 1
-                    if b > 1:
-                        tr+=1
-                    if tr != 0:
-                        tr = i
-                        print("- Unknown Error Occurred In Line " + str(tr + 1))
-                        print("- Please Try Another File")
-                        j()
-                        break
+        open('psnj/'+t+'/tsky', 'w')
+        print("- " + y + ".jpg File detected!")
+        print("- Preview:")
+        ct(a(y + ".jpg"), 0)
 
-                if tr != 0:
-                    break      
-                else:
-                    bu += str(i + 1) + "." + str(z) + ","
-                    print(str(i + 1) + "." + str(z))
-            print("- Is It True ?")
-            print("> 1 : True")
-            print("> 2 : False")
-            p = input("> ")
-            while p != "1" and p != "2":
-                print("- Invalid Input !")
-                p = input("> ")
-            
-            if p == "1":
-                if not os.path.exists("tfs/"):
-                    os.mkdir("tfs")
-                f = open("tfs/"+y+".tf","w")
-                f.write(bu[:-1])
 
-            elif p == "2":
-                print("- Try Another Option !")
-                j()
-        j()
-c()
+print("> PySanj v0.2")
+print("- Easy way to correct short and 4-option tests")
+print("- Enter the command code to perform each command:")
+cs = ["Correction", "Create test", "Test Editor"]
+lc(cs)
+
+
+def lt():
+    global cs
+    cs = []
+    file = os.listdir('psnj/')
+    for i in range(len(file)):
+        if os.path.isdir('psnj/' + file[i]):
+            cs.append(file[i])
+
+
+def ccf(f):
+    global c
+    t = 1
+    for i in range(len(f)):
+        if c.endswith("." + f[i]):
+            t = 0
+    if c == "" or not os.path.exists(c) or t:
+        if t:
+            print("- File format is not true")
+        else:
+            print("- Invalid file or path!")
+        print("- Retry with another path or file:")
+        c = input("> ")
+        ccf(f)
+
+
+c = int(input("> ")) - 1
+cc()
+print("- Welcome to " + cs[int(c)].lower() + " wizard")
+if c == 0:
+    print("- Please specify how you want the correction to be done:")
+    cs = ["Single Correction", "Collective Correction"]
+    lc(cs)
+    c = (int(input("> ")) - 1)
+    cc()
+    print("- Please type path of that image file ( only jpg allowed ):")
+    c = input("> ")
+    ccf(["jpg"])
+    print("- Please choose the test key:")
+    oi = c
+    cs = ["From saved tests", "Build new test"]
+    lc(cs)
+    c = (int(input("> ")) - 1)
+    cc()
+    if c == 0:
+        print("- List tests :")
+        lt()
+        lc(cs)
+        print("- Select By Number :")
+        c = int(input("> ")) - 1
+        cc()
+        ry = (open("psnj/"+cs[c]+"/.tsky", "r").read()).replace('refG(','').replace(')','').split(",")
+    elif c == 1:
+        nt()
+        print("- Continue Correction ...")
+    print("- Preview:")
+    ct(a(oi), ry)
+    print("- Test Result : ( " + str(iouh) + " / 8 )")
+    input
+elif c == 1:
+    nt()
